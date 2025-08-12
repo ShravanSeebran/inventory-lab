@@ -83,8 +83,8 @@ inventory-lab/
 
 ### Team
 
-* Kea 
-* Shravan 
-* Miguel 
+* Kea Nhlapo
+* Shravan Seebran
+* Miguel Dias
 
 ---
