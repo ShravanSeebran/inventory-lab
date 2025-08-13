@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Foreig
 from sqlalchemy.sql import func
 from datetime import datetime
 
-# Import Base from database.py instead of redeclaring it
 from ..database import Base
 
 class Product(Base):
