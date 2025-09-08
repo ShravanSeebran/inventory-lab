@@ -2,13 +2,26 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from .. import schemas, models
-from ..database import get_db
+from app.db import models
+from app import schemas
+from app.db import get_db
+from app.schemas.user import UserLogin, UserResponse, UserCreate
+from app.services import user_service
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
+
+@router.post("/login", response_model=UserResponse)
+def login(user: UserLogin, db: Session = Depends(get_db)):
+    db_user = user_service.authenticate_user(db, user.username, user.password)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+        )
+    return db_user
 
 # Endpoint to create a new user
 @router.post("/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
