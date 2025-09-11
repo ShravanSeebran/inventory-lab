@@ -1,7 +1,7 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from db.models.user import User
+from app.db.models.user import User
 
 
 class UserRepository:

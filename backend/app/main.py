@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from app.api.v1.users import router as user_router
 
-def main():
-    print("Hello from backend!")
+app = FastAPI()
+
+app.include_router(user_router)
 
 
-if __name__ == "__main__":
-    main()
+@app.get("/")
+def home():
+    return {"message": "hello world!"}
