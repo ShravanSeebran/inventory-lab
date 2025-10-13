@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.db.models.user import User
 
+from typing import Dict
+
 
 class UserRepository:
     """Generic user repository using SQLAlchemy ORM"""
@@ -10,7 +12,7 @@ class UserRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def create_user(self, user_data: dict) -> User:
+    def create_user(self, user_data: Dict[str, str]) -> User:
         """Create a new user"""
         try:
             db_user = User(**user_data)
