@@ -1,8 +1,9 @@
+# app/schemas.py
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 from typing import Optional
 
-# --- Product Schemas ---
+
 class ProductBase(BaseModel):
     name: str = Field(..., min_length=1)
     description: Optional[str] = None
@@ -15,10 +16,37 @@ class ProductBase(BaseModel):
     supplier_id: Optional[int] = None
     minimum_stock: int = Field(5, ge=0)
     is_active: bool = True
+    
+    cost_price: Optional[float] = Field(None, gt=0)
+    brand: Optional[str] = None
+    dimensions: Optional[str] = None
+    color: Optional[str] = None
+    size: Optional[str] = None
+    is_tracked: bool = Field(True)
 
 class ProductCreate(ProductBase):
-    # This is for creating a new product. It is the same as ProductBase for now.
+    
     pass
+
+class ProductUpdate(BaseModel):
+    """Schema for updating a product (all fields optional)"""
+    name: Optional[str] = Field(None, min_length=1)
+    description: Optional[str] = None
+    price: Optional[float] = Field(None, gt=0)
+    quantity: Optional[int] = Field(None, ge=0)
+    category: Optional[str] = None
+    sku: Optional[str] = None
+    barcode: Optional[str] = None
+    weight: Optional[float] = None
+    supplier_id: Optional[int] = None
+    minimum_stock: Optional[int] = Field(None, ge=0)
+    is_active: Optional[bool] = None
+    cost_price: Optional[float] = Field(None, gt=0)
+    brand: Optional[str] = None
+    dimensions: Optional[str] = None
+    color: Optional[str] = None
+    size: Optional[str] = None
+    is_tracked: Optional[bool] = None
 
 class ProductResponse(ProductBase):
     id: int
@@ -28,7 +56,7 @@ class ProductResponse(ProductBase):
     class Config:
         from_attributes = True
 
-# --- Supplier Schemas ---
+
 class SupplierBase(BaseModel):
     name: str = Field(..., min_length=1)
     contact_person: Optional[str] = None
@@ -48,7 +76,6 @@ class SupplierResponse(SupplierBase):
     class Config:
         from_attributes = True
 
-# --- Inventory Transaction Schemas ---
 class InventoryTransactionBase(BaseModel):
     product_id: int
     transaction_type: str = Field(..., pattern="^(purchase|sale|adjustment|return)$")
@@ -67,7 +94,6 @@ class InventoryTransactionResponse(InventoryTransactionBase):
     class Config:
         from_attributes = True
 
-# --- User Schemas ---
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3)
     email: EmailStr
@@ -85,3 +111,12 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
