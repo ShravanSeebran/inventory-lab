@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.db.repositories.user_repository import UserRepository
-from app.schemas.user import UserLogin, UserResponse, UserCreate  # ✅ ADDED UserCreate
+from app.schemas.user import UserLogin, UserResponse, UserCreate
 from app.services.user_service import UserService
 
 
