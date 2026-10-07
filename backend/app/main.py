@@ -23,6 +23,11 @@ app.mount("/assets", StaticFiles(directory=frontend / "src" / "assets"), name="a
 def registration_page():
     return FileResponse(frontend / "public" / "index.html")
 
+
+@app.get("/login", include_in_schema=False)
+def login_page():
+    return FileResponse(frontend / "public" / "login.html")
+
 app.include_router(user_router)
 app.include_router(inventory.router)
 

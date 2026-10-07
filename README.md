@@ -79,6 +79,7 @@ inventory-lab/
 4. Open the registration page or API docs:
 
    * [Create account](http://127.0.0.1:8000/register)
+   * [Sign in](http://127.0.0.1:8000/login)
    * [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 The frontend is served by FastAPI on the same origin; no frontend build is needed.
@@ -86,6 +87,13 @@ Tables are created on startup. By default, accounts persist in `backend/inventor
 when launched from `backend`. Set `DATABASE_URL` to use a different database.
 Public registration accepts username, email, first name, last name, and password;
 accounts are always created active and without administrator privileges.
+
+Login issues an eight-hour, HttpOnly, SameSite=Lax session cookie. Only a SHA-256
+hash of its random token is stored in the database. `GET /users/me` returns the
+signed-in account; `POST /users/logout` revokes the session. Inactive users cannot
+sign in or reuse existing sessions. Session-changing browser requests must come
+from the same origin. For HTTPS deployment, set `SESSION_COOKIE_SECURE=true`;
+the default allows local HTTP development. Serve the frontend and API together.
 
 ### Tests
 
