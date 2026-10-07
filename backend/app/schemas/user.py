@@ -70,8 +70,16 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
+    model_config = ConfigDict(extra="forbid")
+
+    username: Optional[Username] = None
     email: Optional[EmailStr] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    password: Optional[str] = None
+    first_name: Optional[Name] = None
+    last_name: Optional[Name] = None
+
+    @field_validator("username", "email", "first_name", "last_name")
+    @classmethod
+    def reject_explicit_null(cls, value):
+        if value is None:
+            raise ValueError("Profile fields cannot be null")
+        return value

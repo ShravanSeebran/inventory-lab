@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My profile | Inventory Lab</title>
+  <link rel="stylesheet" href="/assets/styles/main.css">
+  <script type="module" src="/assets/profile.js"></script>
+</head>
+<body>
+  <header><a href="/login">Inventory Lab</a><a href="/login">Account and sign out</a></header>
+  <main>
+    <p class="eyebrow">YOUR ACCOUNT</p>
+    <h1>My profile</h1>
+    <p>View and update your account details.</p>
+    <form id="profile-form" hidden>
+      <div class="row">
+        <label>First name<input name="first_name" autocomplete="given-name" required maxlength="50"></label>
+        <label>Last name<input name="last_name" autocomplete="family-name" required maxlength="50"></label>
+      </div>
+      <label>Username<input name="username" autocomplete="username" required minlength="3" maxlength="50"></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required maxlength="255"></label>
+      <button type="submit">Save changes</button>
+    </form>
+    <p role="alert" hidden></p>
+    <p role="status">Loading profile…</p>
+  </main>
+</body>
+</html>

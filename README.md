@@ -80,6 +80,7 @@ inventory-lab/
 
    * [Create account](http://127.0.0.1:8000/register)
    * [Sign in](http://127.0.0.1:8000/login)
+   * [My profile](http://127.0.0.1:8000/profile)
    * [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 The frontend is served by FastAPI on the same origin; no frontend build is needed.
@@ -94,6 +95,12 @@ signed-in account; `POST /users/logout` revokes the session. Inactive users cann
 sign in or reuse existing sessions. Session-changing browser requests must come
 from the same origin. For HTTPS deployment, set `SESSION_COOKIE_SECURE=true`;
 the default allows local HTTP development. Serve the frontend and API together.
+
+The profile page loads the signed-in account and saves first name, last name,
+username, and email via `PATCH /users/me`. Omitted fields remain unchanged;
+duplicate usernames/emails, null values, and protected fields are rejected.
+The account ID comes from the session. Password and administrator changes are
+not part of this profile endpoint. Guests and expired sessions return to sign-in.
 
 ### Tests
 
