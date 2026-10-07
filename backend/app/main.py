@@ -28,6 +28,11 @@ def registration_page():
 def login_page():
     return FileResponse(frontend / "public" / "login.html")
 
+
+@app.get("/profile", include_in_schema=False)
+def profile_page():
+    return FileResponse(frontend / "public" / "profile.html", headers={"Cache-Control": "no-store"})
+
 app.include_router(user_router)
 app.include_router(inventory.router)
 

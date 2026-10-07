@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 import socket
 import subprocess
@@ -83,3 +84,36 @@ def test_login_persists_across_reload_and_logout_clears_session(page):
     page.get_by_role("button", name="Sign out").click()
     expect(page.get_by_role("button", name="Sign in", exact=True)).to_be_visible()
     assert page.request.get("/users/me").status == 401
+
+
+def test_profile_edits_persist_and_expired_session_returns_to_login(page):
+    from playwright.sync_api import expect
+
+    register(page)
+    expect(page.get_by_role("status")).to_contain_text("Account created")
+    page.goto("/login")
+    page.get_by_label("Username", exact=True).fill("kea")
+    page.get_by_label("Password", exact=True).fill("a-long-password")
+    page.get_by_role("button", name="Sign in", exact=True).click()
+    expect(page.get_by_role("status")).to_contain_text("Signed in")
+    page.get_by_role("link", name="My profile").click()
+    expect(page.get_by_label("First name")).to_have_value("Kea")
+    page.get_by_label("First name").fill("Updated")
+    page.get_by_label("Email", exact=True).fill("updated@example.com")
+    page.get_by_role("button", name="Save changes").click()
+    expect(page.get_by_role("status")).to_contain_text("Profile saved")
+    page.reload()
+    expect(page.get_by_label("First name")).to_have_value("Updated")
+    expect(page.get_by_label("Email", exact=True)).to_have_value("updated@example.com")
+    page.context.clear_cookies()
+    page.get_by_label("First name").fill("Expired")
+    page.get_by_role("button", name="Save changes").click()
+    expect(page).to_have_url(re.compile(r"/login$"))
+
+
+def test_profile_redirects_guests_to_login(page):
+    from playwright.sync_api import expect
+
+    page.goto("/profile")
+    expect(page).to_have_url(re.compile(r"/login$"))
+    expect(page.get_by_role("button", name="Sign in", exact=True)).to_be_visible()

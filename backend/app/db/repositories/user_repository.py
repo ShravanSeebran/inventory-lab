@@ -54,7 +54,7 @@ class UserRepository:
             return db_user
         except IntegrityError as e:
             self.db.rollback()
-            raise ValueError(f"User update failed: {str(e)}")
+            raise
 
     def delete_user(self, user_id: int) -> bool:
         """Delete user"""

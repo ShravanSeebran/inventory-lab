@@ -64,15 +64,25 @@ class UserService:
 
     def update_user(self, user_id: int, user_data: UserUpdate):
         """Update user information"""
+        if self.repo.get_user_by_id(user_id) is None:
+            return None
         # Prepare update data, excluding unset values
         update_dict = user_data.model_dump(exclude_unset=True)
-        
-        # If password is being updated, hash it
-        if 'password' in update_dict:
-            update_dict['hashed_password'] = get_password_hash(update_dict.pop('password'))
+
+        if "email" in update_dict:
+            existing = self.repo.get_user_by_email(update_dict["email"])
+            if existing and existing.id != user_id:
+                raise HTTPException(status_code=400, detail="Email already registered")
+        if "username" in update_dict:
+            existing = self.repo.get_user_by_username(update_dict["username"])
+            if existing and existing.id != user_id:
+                raise HTTPException(status_code=400, detail="Username already taken")
         
         # Update user using repository
-        db_user = self.repo.update_user(user_id, update_dict)
+        try:
+            db_user = self.repo.update_user(user_id, update_dict)
+        except IntegrityError:
+            raise HTTPException(status_code=400, detail="Profile update conflicts with an existing account")
         if db_user:
             return UserResponse.model_validate(db_user)
         return None

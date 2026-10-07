@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.db.repositories.user_repository import UserRepository
-from app.schemas.user import UserLogin, UserResponse, UserCreate
+from app.schemas.user import UserLogin, UserResponse, UserCreate, UserUpdate
 from app.services.user_service import UserService
 from app.api.auth import SESSION_COOKIE, get_current_user, require_same_origin
 from app.services.session_service import SESSION_SECONDS, SessionService
@@ -60,6 +60,15 @@ def login(user: UserLogin, request: Request, response: Response, user_service: U
 def current_user(response: Response, user=Depends(get_current_user)):
     response.headers["Cache-Control"] = "no-store"
     return user
+
+
+@router.patch("/me", response_model=UserResponse, dependencies=[Depends(require_same_origin)])
+def update_profile(user_data: UserUpdate, response: Response, user=Depends(get_current_user), user_service: UserService = Depends(get_user_service)):
+    updated = user_service.update_user(user.id, user_data)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    response.headers["Cache-Control"] = "no-store"
+    return updated
 
 
 @router.post("/logout", status_code=204, dependencies=[Depends(require_same_origin)])
