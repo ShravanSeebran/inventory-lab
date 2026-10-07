@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in | Inventory Lab</title>
+  <link rel="stylesheet" href="/assets/styles/main.css">
+  <script type="module" src="/assets/login.js"></script>
+</head>
+<body>
+  <header><a href="/login">Inventory Lab</a><span>Inventory starts with your team.</span></header>
+  <main>
+    <p class="eyebrow">YOUR WORKSPACE</p>
+    <h1>Welcome back</h1>
+    <form id="login-form">
+      <label>Username<input name="username" autocomplete="username" required></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Sign in</button>
+    </form>
+    <p role="alert" hidden></p>
+    <p role="status" hidden></p>
+    <div id="signed-in" hidden><button id="logout" type="button">Sign out</button></div>
+    <p>New to Inventory Lab? <a href="/register">Create an account</a></p>
+  </main>
+</body>
+</html>

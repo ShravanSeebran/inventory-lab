@@ -56,7 +56,7 @@ class UserService:
     def authenticate_user(self, username: str, password: str):
         """Authenticate user credentials"""
         user = self.repo.get_user_by_username(username)
-        if not user:
+        if not user or not user.is_active:
             return None
         if not verify_password(password, user.hashed_password):
             return None

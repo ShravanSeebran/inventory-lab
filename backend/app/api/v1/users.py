@@ -1,10 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.db.repositories.user_repository import UserRepository
 from app.schemas.user import UserLogin, UserResponse, UserCreate
 from app.services.user_service import UserService
+from app.api.auth import SESSION_COOKIE, get_current_user, require_same_origin
+from app.services.session_service import SESSION_SECONDS, SessionService
 
 
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
@@ -34,12 +38,32 @@ def register_user(
         )
 
 
-@router.post("/login", response_model=UserResponse)
-def login(user: UserLogin, user_service: UserService = Depends(get_user_service)):
+@router.post("/login", response_model=UserResponse, dependencies=[Depends(require_same_origin)])
+def login(user: UserLogin, request: Request, response: Response, user_service: UserService = Depends(get_user_service), db: Session = Depends(get_db)):
     db_user = user_service.authenticate_user(user.username, user.password)
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
+    token = SessionService(db).create(db_user.id, request.cookies.get(SESSION_COOKIE))
+    response.set_cookie(
+        SESSION_COOKIE, token, max_age=SESSION_SECONDS, httponly=True,
+        secure=os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true",
+        samesite="lax", path="/",
+    )
+    response.headers["Cache-Control"] = "no-store"
     return db_user
+
+
+@router.get("/me", response_model=UserResponse)
+def current_user(response: Response, user=Depends(get_current_user)):
+    response.headers["Cache-Control"] = "no-store"
+    return user
+
+
+@router.post("/logout", status_code=204, dependencies=[Depends(require_same_origin)])
+def logout(request: Request, response: Response, db: Session = Depends(get_db)):
+    SessionService(db).revoke(request.cookies.get(SESSION_COOKIE))
+    response.delete_cookie(SESSION_COOKIE, path="/", httponly=True, samesite="lax")
+    response.headers["Cache-Control"] = "no-store"

@@ -63,3 +63,23 @@ def test_registration_form_submits_and_shows_duplicate_error(page):
     expect(page.get_by_role("status")).to_contain_text("Account created")
     register(page)
     expect(page.get_by_role("alert")).to_contain_text("already registered")
+
+
+def test_login_persists_across_reload_and_logout_clears_session(page):
+    from playwright.sync_api import expect
+
+    register(page)
+    expect(page.get_by_role("status")).to_contain_text("Account created")
+    page.goto("/login")
+    page.get_by_label("Username", exact=True).fill("kea")
+    page.get_by_label("Password", exact=True).fill("wrong-password")
+    page.get_by_role("button", name="Sign in", exact=True).click()
+    expect(page.get_by_role("alert")).to_contain_text("Invalid username or password")
+    page.get_by_label("Password", exact=True).fill("a-long-password")
+    page.get_by_role("button", name="Sign in", exact=True).click()
+    expect(page.get_by_role("status")).to_contain_text("Signed in as Kea Nhlapo")
+    page.reload()
+    expect(page.get_by_role("status")).to_contain_text("Signed in as Kea Nhlapo")
+    page.get_by_role("button", name="Sign out").click()
+    expect(page.get_by_role("button", name="Sign in", exact=True)).to_be_visible()
+    assert page.request.get("/users/me").status == 401
