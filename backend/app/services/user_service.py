@@ -37,14 +37,15 @@ class UserService:
         
         # Create user using repository
         try:
-            db_user = self.repo.create_user(
-                username=user_data.username,
-                email=user_data.email,
-                hashed_password=hashed_password,
-                full_name=f"{user_data.first_name} {user_data.last_name}",
-                is_active=user_data.is_active,
-                is_admin=getattr(user_data, 'is_admin', False)  # Default to False if not provided
-            )
+            db_user = self.repo.create_user({
+                "username": user_data.username,
+                "email": user_data.email,
+                "hashed_password": hashed_password,
+                "first_name": user_data.first_name,
+                "last_name": user_data.last_name,
+                "is_active": True,
+                "is_admin": False,
+            })
             return UserResponse.model_validate(db_user)
         except IntegrityError:
             raise HTTPException(

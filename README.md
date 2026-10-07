@@ -59,25 +59,48 @@ inventory-lab/
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/shravan123/inventory-lab.git
+   git clone https://github.com/ShravanSeebran/inventory-lab.git
    cd inventory-lab
    ```
 
-2. Install dependencies:
+2. Install [uv](https://docs.astral.sh/uv/) and sync the locked dependencies (Python 3.13):
 
    ```bash
-   pip install -r requirements.txt
+   cd backend
+   uv sync --frozen
    ```
 
 3. Run the server:
 
    ```bash
-   uvicorn app.main:app --reload
+   uv run uvicorn app.main:app --reload
    ```
 
-4. Visit the docs:
+4. Open the registration page or API docs:
 
+   * [Create account](http://127.0.0.1:8000/register)
    * [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+The frontend is served by FastAPI on the same origin; no frontend build is needed.
+Tables are created on startup. By default, accounts persist in `backend/inventory.db`
+when launched from `backend`. Set `DATABASE_URL` to use a different database.
+Public registration accepts username, email, first name, last name, and password;
+accounts are always created active and without administrator privileges.
+
+### Tests
+
+Run from `backend`:
+
+```bash
+uv run playwright install chromium
+uv run pytest
+```
+
+The suite covers the API with isolated SQLite databases and submits the real
+registration form in a headless browser. To use installed Microsoft Edge instead,
+set `BROWSER_CHANNEL=msedge` before running pytest; the Chromium download is then
+unnecessary. On machines with restricted temporary directories, pass pytest a
+writable `--basetemp` directory reserved for tests.
 
 ---
 

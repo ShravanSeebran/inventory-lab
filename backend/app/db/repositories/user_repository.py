@@ -20,7 +20,7 @@ class UserRepository:
             return db_user
         except IntegrityError as e:
             self.db.rollback()
-            raise ValueError(f"User creation failed: {str(e)}")
+            raise
 
     def get_user_by_id(self, user_id: int) -> Optional[User]:
         """Get user by ID"""

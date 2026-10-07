@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.db.session import get_db
+from app.db import get_db
 from app.schemas.inventory import ProductCreate, ProductOut
 from app.services import inventory_service
 
